@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مدیریت محتوای اینستاگرام | پنل کامپیوتر</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Vazirmatn Persian Font -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: 'Vazirmatn', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-slate-800/80 backdrop-blur border-b border-slate-700 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 via-red-500 to-amber-500 flex items-center justify-center text-white shadow-lg shadow-pink-500/20">
+          <i data-lucide="instagram" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white leading-tight">مدیریت محتوای اینستاگرام</h1>
+          <p class="text-xs text-slate-400">سرور محلی و همگام‌سازی موبایل</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Connection Status & IP Badge -->
+        <div id="connection-badge" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-700/50 border border-slate-600 text-xs text-emerald-400">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="server-ip-display" class="font-mono text-slate-200">در حال دریافت IP...</span>
+        </div>
+
+        <!-- QR Code Button -->
+        <button onclick="openQrModal()" class="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-sm transition border border-slate-600">
+          <i data-lucide="qr-code" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">اتصال گوشی (QR)</span>
+        </button>
+
+        <!-- New Post Button -->
+        <button onclick="openNewPostModal()" class="flex items-center gap-2 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white px-4 py-2 rounded-lg font-medium text-sm transition shadow-lg shadow-pink-600/30">
+          <i data-lucide="plus-circle" class="w-5 h-5"></i>
+          <span>پست جدید</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Top Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5 flex items-center justify-between">
+        <div>
+          <p class="text-slate-400 text-xs mb-1">کل پست‌ها</p>
+          <h3 id="stat-total" class="text-2xl font-bold text-white">0</h3>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
+          <i data-lucide="layers" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5 flex items-center justify-between">
+        <div>
+          <p class="text-slate-400 text-xs mb-1">در انتظار انتشار</p>
+          <h3 id="stat-pending" class="text-2xl font-bold text-amber-400">0</h3>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+          <i data-lucide="clock" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5 flex items-center justify-between">
+        <div>
+          <p class="text-slate-400 text-xs mb-1">منتشر شده</p>
+          <h3 id="stat-posted" class="text-2xl font-bold text-emerald-400">0</h3>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+          <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5 flex items-center justify-between">
+        <div>
+          <p class="text-slate-400 text-xs mb-1">پوشه پایش خودکار</p>
+          <span class="text-xs text-slate-300 font-mono">watch_folder/</span>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center">
+          <i data-lucide="folder-sync" class="w-6 h-6"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & Search Bar -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-slate-800/40 p-3 rounded-xl border border-slate-700/40">
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <button onclick="setFilter('all')" id="filter-all" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-pink-600 text-white transition">همه</button>
+        <button onclick="setFilter('pending')" id="filter-pending" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition">در انتظار انتشار</button>
+        <button onclick="setFilter('posted')" id="filter-posted" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition">منتشر شده‌ها</button>
+      </div>
+
+      <div class="text-xs text-slate-400 flex items-center gap-2">
+        <i data-lucide="info" class="w-4 h-4 text-pink-400"></i>
+        <span>فایل‌های ویدیو را می‌توانید مستقیماً داخل پوشه <code class="text-pink-300 bg-slate-800 px-1 py-0.5 rounded">watch_folder</code> کپی کنید تا خودکار ثبت شوند.</span>
+      </div>
+    </div>
+
+    <!-- Posts Grid -->
+    <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Dynamically filled by app.js -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden text-center py-16 bg-slate-800/30 rounded-2xl border border-slate-700/30">
+      <div class="w-16 h-16 rounded-full bg-slate-700/50 flex items-center justify-center mx-auto text-slate-400 mb-4">
+        <i data-lucide="video" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-lg font-bold text-white mb-2">هنوز هیچ پستی اضافه نشده است</h3>
+      <p class="text-sm text-slate-400 max-w-md mx-auto mb-6">برای افزودن اولین پست دکمه «پست جدید» را بزنید یا ویدیوهای خود را در پوشه watch_folder قرار دهید.</p>
+      <button onclick="openNewPostModal()" class="bg-pink-600 hover:bg-pink-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition">
+        افزودن اولین پست
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Modal: New Post Form -->
+  <div id="new-post-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl my-8">
+      <div class="p-6 border-b border-slate-700 flex items-center justify-between">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="film" class="w-5 h-5 text-pink-400"></i>
+          افزودن پست جدید اینستاگرام
+        </h2>
+        <button onclick="closeNewPostModal()" class="text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <form id="post-form" onsubmit="handleCreatePost(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">عنوان پست</label>
+          <input type="text" id="form-title" required placeholder="مثال: ریلز آموزش هوش مصنوعی قسمت اول" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-pink-500 transition text-sm">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Video File Upload -->
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1">فایل ویدیو (MP4, MOV)</label>
+            <div class="border-2 border-dashed border-slate-700 hover:border-pink-500/50 rounded-xl p-4 text-center cursor-pointer bg-slate-900/50 transition relative">
+              <input type="file" id="form-video" accept="video/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="updateFileName(this, 'video-name')">
+              <i data-lucide="video" class="w-8 h-8 mx-auto text-slate-400 mb-1"></i>
+              <p id="video-name" class="text-xs text-slate-400">برای انتخاب ویدیو کلیک کنید</p>
+            </div>
+          </div>
+
+          <!-- Cover File Upload -->
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1">کاور پست (JPG, PNG)</label>
+            <div class="border-2 border-dashed border-slate-700 hover:border-pink-500/50 rounded-xl p-4 text-center cursor-pointer bg-slate-900/50 transition relative">
+              <input type="file" id="form-cover" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="updateFileName(this, 'cover-name')">
+              <i data-lucide="image" class="w-8 h-8 mx-auto text-slate-400 mb-1"></i>
+              <p id="cover-name" class="text-xs text-slate-400">برای انتخاب کاور کلیک کنید</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date & Time Picker -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1">تاریخ و ساعت انتشار (میلادی)</label>
+            <input type="datetime-local" id="form-date" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-pink-500 transition text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1">تاریخ شمسی (محاسبه خودکار)</label>
+            <input type="text" id="form-shamsi-date" placeholder="مثال: ۱۴۰۳/۰۷/۰۱ - ۱۸:۳۰" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-pink-300 font-mono text-sm focus:outline-none">
+          </div>
+        </div>
+
+        <!-- Caption -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-sm font-medium text-slate-300">کپشن اینستاگرام</label>
+            <span id="caption-counter" class="text-xs text-slate-500">۰ کاراکتر</span>
+          </div>
+          <textarea id="form-caption" rows="4" placeholder="متن کپشن، توضیحات، هشتگ‌ها و فراخوان اقدام (CTA)..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-pink-500 transition text-sm leading-relaxed" oninput="updateCaptionCount()"></textarea>
+        </div>
+
+        <!-- Mark as Posted Checkbox -->
+        <div class="flex items-center gap-3 p-3 bg-slate-900/50 rounded-xl border border-slate-700/50">
+          <input type="checkbox" id="form-is-posted" class="w-5 h-5 rounded text-pink-600 bg-slate-800 border-slate-600 focus:ring-pink-500">
+          <label for="form-is-posted" class="text-sm text-slate-300 cursor-pointer">این پست قبلاً در اینستاگرام منتشر شده است</label>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="pt-4 border-t border-slate-700 flex items-center justify-end gap-3">
+          <button type="button" onclick="closeNewPostModal()" class="px-4 py-2 rounded-xl text-sm text-slate-400 hover:text-white transition">انصراف</button>
+          <button type="submit" id="submit-btn" class="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white px-6 py-2.5 rounded-xl font-medium text-sm transition shadow-lg shadow-pink-600/30 flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>ذخیره پست</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: QR Code for Mobile Pairing -->
+  <div id="qr-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl text-center p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="smartphone" class="w-5 h-5 text-pink-400"></i>
+          اتصال اپلیکیشن موبایل
+        </h3>
+        <button onclick="closeQrModal()" class="text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl inline-block shadow-lg mb-4">
+        <img id="qr-image" src="" alt="QR Code" class="w-64 h-64 mx-auto">
+      </div>
+
+      <p class="text-sm text-slate-300 mb-2 font-medium">دوربین اپلیکیشن فلاتر را روی این کد بگیرید</p>
+      <p class="text-xs text-slate-400 mb-4">یا آدرس زیر را به صورت دستی در اپلیکیشن وارد نمایید:</p>
+      
+      <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between font-mono text-xs text-pink-300">
+        <span id="qr-server-url">http://...</span>
+        <button onclick="copyServerUrl()" class="text-slate-400 hover:text-white px-2 py-1 bg-slate-800 rounded">کپی</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
